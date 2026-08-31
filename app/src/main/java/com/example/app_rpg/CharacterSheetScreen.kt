@@ -63,7 +63,13 @@ val statusMock = listOf(
 val periciaMock = listOf(
     PericiasData(proficiencia = 2, bonus = 2, nome = "Perícia X"),
     PericiasData(proficiencia = 0, bonus = 0, nome = "Perícia Y"),
-    PericiasData(proficiencia = 1, bonus = 4, nome = "Perícia Z")
+    PericiasData(proficiencia = 1, bonus = 4, nome = "Perícia Z"),
+    PericiasData(proficiencia = 2, bonus = 2, nome = "Perícia A"),
+    PericiasData(proficiencia = 0, bonus = 0, nome = "Perícia B"),
+    PericiasData(proficiencia = 1, bonus = 4, nome = "Perícia C"),
+    PericiasData(proficiencia = 2, bonus = 2, nome = "Perícia U"),
+    PericiasData(proficiencia = 0, bonus = 0, nome = "Perícia I"),
+    PericiasData(proficiencia = 1, bonus = 4, nome = "Perícia V")
 )
 
 
@@ -169,16 +175,36 @@ fun PericiaSection() {
         colors = CardDefaults.cardColors(containerColor = corCinzaEscuro),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            periciaMock.forEach { pericia ->
-                LinhaPericia(
-                    proficiencia = pericia.proficiencia,
-                    bonus = pericia.bonus,
-                    nome = pericia.nome
-                )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                periciaMock.forEach { pericia ->
+                    LinhaPericia(
+                        proficiencia = pericia.proficiencia,
+                        bonus = pericia.bonus,
+                        nome = pericia.nome
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                periciaMock.forEach { pericia ->
+                    LinhaPericia(
+                        proficiencia = pericia.proficiencia,
+                        bonus = pericia.bonus,
+                        nome = pericia.nome
+                    )
+                }
             }
         }
     }
