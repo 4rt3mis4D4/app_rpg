@@ -2,7 +2,6 @@ package com.example.app_rpg
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,15 +12,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -36,6 +39,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.app_rpg.ui.theme.corBrancoOffWhite
+import com.example.app_rpg.ui.theme.corBrancoPuro
+import com.example.app_rpg.ui.theme.corCinzaEscuro
+import com.example.app_rpg.ui.theme.corCinzaMedio
+import com.example.app_rpg.ui.theme.corJogadorDestaque
+import com.example.app_rpg.ui.theme.corJogadorPrincipal
+import com.example.app_rpg.ui.theme.corPretoPuro
 
 
 private data class DiceStats(
@@ -54,10 +65,7 @@ private data class DiceStats(
 
 @Composable
 fun DiceScreen(modifier: Modifier = Modifier) {
-    val padding = 16.dp
-    val aspectRatio = 1.5f
-
-    val expressionState = rememberTextFieldState()
+    val expressionState = rememberTextFieldState("2d6 + 3")
 
     var stats by remember { mutableStateOf<DiceStats?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -76,110 +84,182 @@ fun DiceScreen(modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
+            .background(corPretoPuro)
             .verticalScroll(rememberScrollState())
-            .padding(padding),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(padding)
+            .padding(horizontal = 20.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = "Dados",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
+        ExpressionSection(
+            state = expressionState,
+            error = error,
+            onSubmit = ::submit
         )
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(padding),
-            verticalAlignment = Alignment.Top
-        ) {
-            TextField(
-                modifier = Modifier.weight(4f),
-                state = expressionState,
-                label = { Text("Expressão") },
-                placeholder = { Text("2d6 + 3") },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                isError = error != null,
-                supportingText = error?.let { message -> { Text(message) } }
-            )
+        DataSection(stats)
 
-            Button(
-                modifier = Modifier
-                    .weight(1f)
-                    .aspectRatio(1f),
-                onClick = ::submit
-            ) {
-                Text("=")
-            }
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(padding)
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(padding)) {
-                BoxComponent(
-                    label = "Média",
-                    value = stats?.let { "%.2f".format(it.expression.mean) },
-                    modifier = Modifier.weight(1f).aspectRatio(aspectRatio)
-                )
-                BoxComponent(
-                    label = "Mediana",
-                    value = stats?.median?.toString(),
-                    modifier = Modifier.weight(1f).aspectRatio(aspectRatio)
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(padding)) {
-                BoxComponent(
-                    label = "Mín",
-                    value = stats?.expression?.min?.toString(),
-                    modifier = Modifier.weight(1f).aspectRatio(aspectRatio)
-                )
-                BoxComponent(
-                    label = "Máx",
-                    value = stats?.expression?.max?.toString(),
-                    modifier = Modifier.weight(1f).aspectRatio(aspectRatio)
-                )
-            }
-        }
-
-        stats?.let { current ->
-            BarChart(
-                data = current.bars,
-                modifier = Modifier.fillMaxWidth(),
-                formatValue = { percent -> "%.0f".format(percent) }
+        if (stats != null) {
+            DistributionSection(stats!!.bars)
+        } else {
+            Text(
+                text = "Digite uma expressão como 2d6 + 3 para ver a distribuição.",
+                color = corCinzaMedio,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
     }
 }
 
 @Composable
-fun BoxComponent(
+private fun ExpressionSection(
+    state: androidx.compose.foundation.text.input.TextFieldState,
+    error: String?,
+    onSubmit: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        TextField(
+            modifier = Modifier.weight(1f),
+            state = state,
+            label = { Text("Expressão") },
+            placeholder = { Text("2d6 + 3") },
+            lineLimits = TextFieldLineLimits.SingleLine,
+            isError = error != null,
+            supportingText = error?.let { message -> { Text(message) } },
+            shape = RoundedCornerShape(14.dp),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = corCinzaEscuro,
+                unfocusedContainerColor = corCinzaEscuro,
+                errorContainerColor = corCinzaEscuro,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                errorIndicatorColor = Color.Transparent,
+                focusedTextColor = corBrancoOffWhite,
+                unfocusedTextColor = corBrancoOffWhite,
+                cursorColor = corJogadorPrincipal,
+                focusedLabelColor = corJogadorPrincipal,
+                unfocusedLabelColor = corCinzaMedio,
+                focusedPlaceholderColor = corCinzaMedio,
+                unfocusedPlaceholderColor = corCinzaMedio,
+                errorLabelColor = corJogadorDestaque,
+                errorSupportingTextColor = corJogadorDestaque
+            )
+        )
+
+        Button(
+            onClick = onSubmit,
+            modifier = Modifier.size(56.dp),
+            shape = RoundedCornerShape(50),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = corJogadorPrincipal,
+                contentColor = corBrancoPuro
+            )
+        ) {
+            Text(
+                text = "=",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+private fun DataSection(stats: DiceStats?) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ResultCard(
+                valor = stats?.let { "%.2f".format(it.expression.mean) },
+                label = "Média",
+                modifier = Modifier.weight(1f)
+            )
+            ResultCard(
+                valor = stats?.median?.toString(),
+                label = "Mediana",
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            ResultCard(
+                valor = stats?.expression?.min?.toString(),
+                label = "Mín",
+                modifier = Modifier.weight(1f)
+            )
+            ResultCard(
+                valor = stats?.expression?.max?.toString(),
+                label = "Máx",
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DistributionSection(bars: List<Bar>) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = corCinzaEscuro),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Distribuição (%)",
+                color = corCinzaMedio,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium
+            )
+            BarChart(data = bars, modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Composable
+fun ResultCard(
+    valor: String?,
     label: String,
-    value: String?,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
-            .border(
-                1.dp,
-                MaterialTheme.colorScheme.outline,
-                RoundedCornerShape(16.dp)
-            )
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
+    Card(
+        modifier = modifier.aspectRatio(2f),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = corCinzaEscuro),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
-                text = value ?: "—",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
+                text = valor ?: "—",
+                color = if (valor == null) corCinzaMedio else corBrancoPuro,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.ExtraBold,
+                lineHeight = 30.sp,
                 maxLines = 1
             )
             Text(
                 text = label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = corCinzaMedio,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Normal,
+                lineHeight = 13.sp,
                 maxLines = 1
             )
         }
@@ -196,10 +276,10 @@ data class Bar(
 fun BarChart(
     data: List<Bar>,
     modifier: Modifier = Modifier,
-    chartHeight: Dp = 180.dp,
-    barColor: Color = MaterialTheme.colorScheme.primary,
-    highlightColor: Color = MaterialTheme.colorScheme.tertiary,
-    formatValue: (Float) -> String = { "%.1f".format(it) }
+    chartHeight: Dp = 120.dp,
+    barColor: Color = corJogadorPrincipal,
+    highlightColor: Color = corJogadorDestaque,
+    formatValue: (Float) -> String = { "%.0f".format(it) }
 ) {
     if (data.isEmpty()) return
 
@@ -225,7 +305,8 @@ fun BarChart(
                     if (showValues) {
                         Text(
                             text = formatValue(bar.value),
-                            style = MaterialTheme.typography.labelSmall,
+                            color = corCinzaMedio,
+                            fontSize = 10.sp,
                             maxLines = 1
                         )
                         Spacer(Modifier.height(4.dp))
@@ -237,11 +318,12 @@ fun BarChart(
                             .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp))
                             .background(if (bar.highlighted) highlightColor else barColor)
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(6.dp))
                     Text(
                         text = bar.label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (bar.highlighted) corBrancoPuro else corCinzaMedio,
+                        fontSize = 10.sp,
+                        fontWeight = if (bar.highlighted) FontWeight.Bold else FontWeight.Normal,
                         maxLines = 1
                     )
                 }
@@ -335,7 +417,7 @@ fun List<Outcome>.median(): Int {
     return last().total
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun DiceScreenPreview() {
     DiceScreen(Modifier.fillMaxSize())

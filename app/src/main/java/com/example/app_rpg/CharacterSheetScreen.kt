@@ -75,9 +75,14 @@ val periciaMock = listOf(
 
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
-fun FichaPersonagemScreen() {
+fun FichaPersonagemScreenPreview(){
+    FichaPersonagemScreen(Modifier)
+}
+
+@Composable
+fun FichaPersonagemScreen(modifier: Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(corPretoPuro)
             .padding(horizontal = 20.dp, vertical = 24.dp)

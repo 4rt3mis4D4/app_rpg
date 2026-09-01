@@ -5,13 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +22,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.app_rpg.ui.theme.App_rpgTheme
+import com.example.app_rpg.ui.theme.corBrancoPuro
+import com.example.app_rpg.ui.theme.corCinzaEscuro
+import com.example.app_rpg.ui.theme.corCinzaMedio
+import com.example.app_rpg.ui.theme.corJogadorPrincipal
+import com.example.app_rpg.ui.theme.corPretoPuro
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +62,9 @@ fun App() {
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        containerColor = corPretoPuro,
         bottomBar = {
-            NavigationBar {
+            NavigationBar(containerColor = corCinzaEscuro) {
                 Destination.entries.forEach { destination ->
                     NavigationBarItem(
                         selected = current == destination,
@@ -64,21 +75,32 @@ fun App() {
                                 contentDescription = destination.label
                             )
                         },
-                        label = { Text(destination.label) }
+                        label = {
+                            Text(
+                                text = destination.label,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = corBrancoPuro,
+                            selectedTextColor = corBrancoPuro,
+                            indicatorColor = corJogadorPrincipal,
+                            unselectedIconColor = corCinzaMedio,
+                            unselectedTextColor = corCinzaMedio
+                        )
                     )
                 }
             }
         }
     ) { innerPadding ->
-        // innerPadding clears the bottom bar and the system bars, since
-        // enableEdgeToEdge() lets content draw behind them.
         val contentModifier = Modifier
             .fillMaxSize()
             .padding(innerPadding)
 
         when (current) {
             Destination.Dice -> DiceScreen(contentModifier)
-            Destination.CharacterSheet -> FichaPersonagemScreen()
+            Destination.CharacterSheet -> FichaPersonagemScreen(contentModifier)
             Destination.Playlist -> PlaceholderScreen("Música", contentModifier)
         }
     }
@@ -90,7 +112,7 @@ private fun PlaceholderScreen(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Text(title, style = MaterialTheme.typography.headlineMedium)
+        Text(title, color = corCinzaMedio, fontSize = 18.sp)
     }
 }
 

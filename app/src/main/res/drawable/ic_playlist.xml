@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!--
+      Eighth note: stem with a flag, plus an elliptical head. Default nonZero
+      fill unions the two overlapping subpaths instead of cutting a hole.
+    -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M10.5,4.5 L18,2.5 L18,5.5 L12,7.1 L12,17 L10.5,17 Z M5.7,17.5 a2.8,2.2 0 1,0 5.6,0 a2.8,2.2 0 1,0 -5.6,0 Z" />
+</vector>
