@@ -37,15 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-// ---------------------------------------------------------------------------
-// Screen
-// ---------------------------------------------------------------------------
 
-/**
- * Everything the screen needs to render one parsed expression.
- * Held as a single state object so the stat boxes and the chart can never
- * disagree about which expression they are showing.
- */
 private data class DiceStats(
     val expression: DiceExpression,
     val outcomes: List<Outcome>
@@ -61,12 +53,10 @@ private data class DiceStats(
 }
 
 @Composable
-fun DiceScreen() {
+fun DiceScreen(modifier: Modifier = Modifier) {
     val padding = 16.dp
     val aspectRatio = 1.5f
 
-    // The TextField owns its own text. Read from this on submit rather than
-    // trying to mirror it into a separate String.
     val expressionState = rememberTextFieldState()
 
     var stats by remember { mutableStateOf<DiceStats?>(null) }
@@ -85,8 +75,7 @@ fun DiceScreen() {
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .verticalScroll(rememberScrollState())
             .padding(padding),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -162,10 +151,6 @@ fun DiceScreen() {
         }
     }
 }
-
-// ---------------------------------------------------------------------------
-// Components
-// ---------------------------------------------------------------------------
 
 @Composable
 fun BoxComponent(
@@ -353,5 +338,5 @@ fun List<Outcome>.median(): Int {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun DiceScreenPreview() {
-    DiceScreen()
+    DiceScreen(Modifier.fillMaxSize())
 }
