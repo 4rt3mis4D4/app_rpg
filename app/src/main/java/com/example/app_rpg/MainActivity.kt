@@ -1,6 +1,7 @@
 package com.example.app_rpg
 
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +34,7 @@ import com.example.app_rpg.ui.theme.corBrancoPuro
 import com.example.app_rpg.ui.theme.corCinzaEscuro
 import com.example.app_rpg.ui.theme.corCinzaMedio
 import com.example.app_rpg.ui.theme.corJogadorPrincipal
+import com.example.app_rpg.ui.theme.corMestreDestaque
 import com.example.app_rpg.ui.theme.corPretoPuro
 
 class MainActivity : ComponentActivity() {
@@ -85,9 +87,14 @@ fun App() {
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = corBrancoPuro,
                             selectedTextColor = corBrancoPuro,
-                            indicatorColor = corJogadorPrincipal,
+
+                            indicatorColor = if(destination == Destination.Playlist){
+                                corMestreDestaque
+                            }else{
+                                corJogadorPrincipal
+                            },
                             unselectedIconColor = corCinzaMedio,
-                            unselectedTextColor = corCinzaMedio
+                            unselectedTextColor = corCinzaMedio,
                         )
                     )
                 }
@@ -101,7 +108,7 @@ fun App() {
         when (current) {
             Destination.Dice -> DiceScreen(contentModifier)
             Destination.CharacterSheet -> FichaPersonagemScreen(contentModifier)
-            Destination.Playlist -> PlaceholderScreen("Música", contentModifier)
+            Destination.Playlist -> Playlist(contentModifier)
         }
     }
 }
