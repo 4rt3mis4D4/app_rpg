@@ -30,18 +30,10 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding),
                     ) {
-                        CharacterSheet()
+                        DiceScreen()
                     }
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFF000000)
-@Composable
-fun FichaPersonagemPreview() {
-    App_rpgTheme {
-        CharacterSheet()
     }
 }
